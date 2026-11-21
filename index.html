@@ -251,6 +251,23 @@
     }
     .contact-box p { color: var(--muted); font-size: 18px; max-width: 520px; margin: 0 auto; }
     .contact-box .btns { justify-content: center; }
+    .contact-form { max-width: 520px; margin: 30px auto 0; text-align: left; display: grid; gap: 14px; }
+    .contact-form label { display: block; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .contact-form input, .contact-form textarea {
+      width: 100%; font: inherit; color: var(--text); background: var(--bg);
+      border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; transition: border-color .2s, box-shadow .2s;
+    }
+    .contact-form textarea { min-height: 110px; resize: vertical; }
+    .contact-form input:focus, .contact-form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+    .contact-form .opt { text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .contact-form .hp { position: absolute; left: -9999px; }
+    .contact-form button { justify-self: center; cursor: pointer; font-family: inherit; margin-top: 4px; }
+    .contact-form button:disabled { opacity: .6; cursor: wait; }
+    .form-status { text-align: center; font-size: 15px; min-height: 1.5em; margin: 0; }
+    .form-status.ok { color: #45c08a; }
+    .form-status.err { color: #ef5d61; }
+    .or { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; max-width: 520px; margin: 30px auto 0; }
+    .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
     .contact-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px 36px; margin-top: 30px; color: var(--muted); font-size: 15px; }
     .contact-meta b { display: block; color: var(--accent); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
 
@@ -485,10 +502,34 @@
         <h2>Let's <span>Connect</span></h2>
       </div>
       <div class="contact-box reveal">
-        <p>The best way to reach me is through LinkedIn. I'd love to connect with fellow students, nurses, and healthcare professionals!</p>
+        <p>Send me a message below and I'll get back to you by email. I'd love to connect with fellow students, nurses, and healthcare professionals!</p>
+
+        <!-- Contact form: messages are delivered to my email by Web3Forms (web3forms.com).
+             Paste the access key from Web3Forms into the "access_key" value below. -->
+        <form class="contact-form" id="contactForm" novalidate>
+          <input type="hidden" name="access_key" value="68e2b556-6ba5-49b4-9c77-f59c5133c4ac">
+          <input type="hidden" name="subject" value="New message from your website">
+          <input type="hidden" name="from_name" value="Sitashma's Website">
+          <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div>
+            <label for="cfName">Your name</label>
+            <input id="cfName" name="name" type="text" autocomplete="name" required maxlength="100">
+          </div>
+          <div>
+            <label for="cfEmail">Your email (Gmail)</label>
+            <input id="cfEmail" name="email" type="email" autocomplete="email" placeholder="you@gmail.com" required maxlength="150">
+          </div>
+          <div>
+            <label for="cfMsg">Message <span class="opt">(optional)</span></label>
+            <textarea id="cfMsg" name="message" maxlength="2000"></textarea>
+          </div>
+          <button class="btn solid" type="submit" id="cfSend">Send message</button>
+          <p class="form-status" id="cfStatus" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="or">or</div>
         <div class="btns">
-          <a class="btn solid" href="https://www.linkedin.com/in/sitashma-s-b4752b41a/" target="_blank" rel="noopener">View my LinkedIn</a>
-          <!-- Optional: <a class="btn" href="mailto:you@example.com">Email me</a> -->
+          <a class="btn" href="https://www.linkedin.com/in/sitashma-s-b4752b41a/" target="_blank" rel="noopener">Connect on LinkedIn</a>
         </div>
         <div class="contact-meta">
           <div><b>Location</b>Monroe, Louisiana, USA</div>
@@ -510,6 +551,33 @@
       var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
       root.setAttribute('data-theme', next);
       try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+
+    // Contact form -> Web3Forms -> my email
+    var form = document.getElementById('contactForm');
+    var statusEl = document.getElementById('cfStatus');
+    var sendBtn = document.getElementById('cfSend');
+    function setStatus(msg, kind) { statusEl.textContent = msg; statusEl.className = 'form-status ' + (kind || ''); }
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var nameEl = document.getElementById('cfName'), emailEl = document.getElementById('cfEmail');
+      var name = nameEl.value.trim(), email = emailEl.value.trim();
+      if (!name) { setStatus('Please enter your name.', 'err'); nameEl.focus(); return; }
+      if (!email || !emailEl.checkValidity()) { setStatus('Please enter a valid email address.', 'err'); emailEl.focus(); return; }
+      if (form.querySelector('[name=access_key]').value.indexOf('YOUR_') === 0) { setStatus('The contact form is not set up yet. Please reach me on LinkedIn for now.', 'err'); return; }
+      var data = Object.fromEntries(new FormData(form));
+      data.replyto = email;
+      sendBtn.disabled = true; sendBtn.textContent = 'Sending…'; setStatus('');
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        if (res.success) { form.reset(); setStatus('Thank you, ' + name + '! Your message was sent. I\'ll reply soon.', 'ok'); }
+        else { setStatus('Sorry, the message could not be sent. Please try again or reach me on LinkedIn.', 'err'); }
+      }).catch(function () {
+        setStatus('Network error. Please check your connection and try again.', 'err');
+      }).finally(function () { sendBtn.disabled = false; sendBtn.textContent = 'Send message'; });
     });
 
     // Top bar background after scrolling
