@@ -1,0 +1,7 @@
+# Local-only files (not part of the website)
+.claude/
+*.HEIC
+*.heic
+headshot.jpg
+photo-casual.jpg
+photo-riverfront.jpg

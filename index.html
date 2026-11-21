@@ -217,6 +217,12 @@
     .card .sub { color: var(--accent); font-family: "Dancing Script", cursive; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
     .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; }
     .chips li { background: var(--bg); color: var(--muted); border: 1px solid var(--line); padding: 5px 13px; border-radius: 999px; font-size: 14px; }
+    /* Projects */
+    .project { display: grid; grid-template-columns: auto 1fr; gap: 26px; align-items: start; max-width: 900px; margin: 0 auto; }
+    .project .icon { margin-bottom: 0; }
+    .project p.desc { color: var(--muted); margin: 4px 0 16px; }
+    .project .btns { margin-top: 22px; }
+    @media (max-width: 600px) { .project { grid-template-columns: 1fr; gap: 14px; } }
     @media (max-width: 900px) { .cards { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 600px) { .cards { grid-template-columns: 1fr; } }
 
@@ -273,6 +279,7 @@
       <nav>
         <a href="#about">About</a>
         <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
         <a href="#story">Story</a>
         <a href="#contact">Contact</a>
         <button class="theme-btn" id="themeBtn" aria-label="Switch light or dark mode">
@@ -385,8 +392,38 @@
     </div>
   </section>
 
+  <!-- ===== PROJECTS ===== -->
+  <section id="projects" class="alt">
+    <div class="container">
+      <div class="heading reveal">
+        <span class="watermark" aria-hidden="true">Projects</span>
+        <p>What I've built</p>
+        <h2>My <span>Projects</span></h2>
+      </div>
+      <div class="card project reveal">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7z"/><path d="M8.5 8.5l7 7"/></svg></div>
+        <div>
+          <h3>eMAR Safety Simulator</h3>
+          <p class="sub">Medication safety, built by a nurse</p>
+          <p class="desc">An electronic Medication Administration Record that catches errors before a dose is given. It stops nurses who haven't reviewed allergies, flags early, late and duplicate doses, warns about dangerous drug combinations and abnormal labs (like digoxin with low potassium), and asks for the meal tray before rapid-acting insulin.</p>
+          <ul class="chips">
+            <li>Allergy alerts</li>
+            <li>Dose timing</li>
+            <li>Drug interactions</li>
+            <li>Lab-based holds</li>
+            <li>Insulin safety</li>
+            <li>HTML, CSS &amp; JavaScript</li>
+          </ul>
+          <div class="btns">
+            <a class="btn solid" href="mar.html">Try the simulator</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== STORY: education + experience ===== -->
-  <section id="story" class="alt">
+  <section id="story">
     <div class="container">
       <div class="heading reveal">
         <span class="watermark" aria-hidden="true">History</span>
@@ -440,7 +477,7 @@
   </section>
 
   <!-- ===== CONTACT ===== -->
-  <section id="contact">
+  <section id="contact" class="alt">
     <div class="container">
       <div class="heading reveal">
         <span class="watermark" aria-hidden="true">Contact</span>
